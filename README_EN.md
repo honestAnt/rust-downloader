@@ -1,4 +1,4 @@
-[中文](README.md)|[english](README_EN.md)
+[中文](README.md)|**English**
 # High-Performance Multi-File Downloader
 
 A powerful Rust-based multi-file downloader with concurrent downloads, resume support, progress tracking, and performance optimizations.
