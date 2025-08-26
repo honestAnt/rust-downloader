@@ -1,0 +1,8 @@
+/target
+/releases
+/dist
+/.mfsu
+.swc
+.idea
+.vscode
+.DS_Store
