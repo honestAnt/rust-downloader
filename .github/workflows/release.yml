@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  build-release:
+    name: Build Release
+    needs: create-release
+    strategy:
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - x86_64-apple-darwin
+          - x86_64-pc-windows-gnu
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            name: downloader-linux-amd64
+            asset_name: downloader-linux-amd64.tar.gz
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            name: downloader-macos-amd64
+            asset_name: downloader-macos-amd64.tar.gz
+          - target: x86_64-pc-windows-gnu
+            os: windows-latest
+            name: downloader-windows-amd64
+            asset_name: downloader-windows-amd64.zip
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+
+      - name: Build Release
+        uses: actions-rs/cargo@v1
+        with:
+          use-cross: false
+          command: build
+          args: --release --target ${{ matrix.target }}
+
+      - name: Package Release
+        shell: bash
+        run: |
+          mkdir -p packaging
+          if [ "${{ matrix.target }}" = "x86_64-pc-windows-gnu" ]; then
+            cp "target/${{ matrix.target }}/release/downloader.exe" "packaging/${{ matrix.name }}.exe"
+            cp README.md packaging/
+            cp README_EN.md packaging/
+            cp QUICKSTART.md packaging/
+            cd packaging && 7z a -r "../${{ matrix.asset_name }}" . && cd ..
+          else
+            cp "target/${{ matrix.target }}/release/downloader" "packaging/${{ matrix.name }}"
+            cp README.md packaging/
+            cp README_EN.md packaging/
+            cp QUICKSTART.md packaging/
+            cd packaging && tar -czf "../${{ matrix.asset_name }}" . && cd ..
+          fi
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ${{ matrix.asset_name }}
+          asset_name: ${{ matrix.asset_name }}
+          asset_content_type: application/octet-stream

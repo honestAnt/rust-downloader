@@ -1,7 +1,13 @@
 [package]
-name = "util"
+name = "downloader"
 version = "0.1.0"
 edition = "2021"
+description = "A high-performance multi-file downloader written in Rust"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT"
+repository = "https://github.com/yourusername/rust-downloader"
+keywords = ["download", "cli", "concurrent", "multi-file"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 reqwest = { version = "0.11", features = ["stream", "blocking", "rustls-tls"] }
@@ -14,3 +20,9 @@ path-slash = "0.2"
 futures = "0.3"
 rayon = "1.8"
 dashmap = "5.5"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

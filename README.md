@@ -20,11 +20,19 @@
 
 ## 📦 安装
 
+### 下载预编译版本
+
+从 [Releases](https://github.com/honestAnt/rust-downloader/releases) 页面下载适用于您平台的预编译版本。
+
+### 从源码构建
+
 确保你的系统已安装Rust和Cargo，然后在项目目录中运行：
 
 ```bash
 cargo build --release
 ```
+
+构建后的可执行文件位于 `target/release/downloader` (在Windows上是 `target/release/downloader.exe`)。
 
 ## 🎯 使用方法
 
@@ -32,22 +40,22 @@ cargo build --release
 
 ```bash
 # 下载单个文件
-./target/release/util -u "https://example.com/file.zip"
+./target/release/downloader -u "https://example.com/file.zip"
 
 # 下载多个文件
-./target/release/util -u "https://example.com/file1.zip" "https://example.com/file2.zip" "https://example.com/file3.zip"
+./target/release/downloader -u "https://example.com/file1.zip" "https://example.com/file2.zip" "https://example.com/file3.zip"
 
 # 指定输出文件名（单个文件）
-./target/release/util -u "https://example.com/file.zip" -o "my_file.zip"
+./target/release/downloader -u "https://example.com/file.zip" -o "my_file.zip"
 
 # 指定输出文件名（多个文件会自动添加序号）
-./target/release/util -u "https://example.com/file1.zip" "https://example.com/file2.zip" -o "download"
+./target/release/downloader -u "https://example.com/file1.zip" "https://example.com/file2.zip" -o "download"
 
 # 启用断点续传
-./target/release/util -u "https://example.com/file.zip" -r
+./target/release/downloader -u "https://example.com/file.zip" -r
 
 # 显示详细信息
-./target/release/util -u "https://example.com/file.zip" -v
+./target/release/downloader -u "https://example.com/file.zip" -v
 ```
 
 ### 高性能配置
@@ -207,7 +215,23 @@ cargo check
 
 ## 📄 许可证
 
-AGPL 3.0 License
+本项目采用MIT许可证 - 查看 [LICENSE](LICENSE) 文件了解更多详情。
+
+## 🏗️ 构建与发布
+
+### 为不同平台构建
+
+请参考 [BUILDING.md](BUILDING.md) 文件了解如何为不同平台构建可执行文件。
+
+### 使用构建脚本
+
+项目提供了构建脚本，可以自动为Windows、Linux和macOS构建可执行文件：
+
+```bash
+./build-release.sh
+```
+
+生成的可执行文件将位于 `releases/` 目录中。
 
 ## ⚠️ 免责声明
 
